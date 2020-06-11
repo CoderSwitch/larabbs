@@ -1,5 +1,7 @@
 <?php
 
+use Overtrue\LaravelLang\TranslationServiceProvider;
+
 return [
 
     /*
