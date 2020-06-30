@@ -22,6 +22,7 @@ class VerificationCodesController extends Controller
 
         return response()->json([
             'key' => $key,
+            'code' => $code,
             'expired_at' => $expiredAt->toDateTimeString(),
         ])->setStatusCode(201);
     }
