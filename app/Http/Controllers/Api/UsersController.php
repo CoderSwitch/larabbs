@@ -32,6 +32,17 @@ class UsersController extends Controller
         //清除验证码缓存
         \Cache::forget($request->verification_key);
 
+        return (new UserResource($user))->showSensitiveFields();
+    }
+
+    public function show(User $user, Request $request)
+    {
         return new UserResource($user);
+//        return response()->json($user)->setStatusCode(201);
+    }
+
+    public function me(Request $request)
+    {
+        return (new UserResource($request->user()))->showSensitiveFields();
     }
 }
