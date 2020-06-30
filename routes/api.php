@@ -14,9 +14,19 @@ use Illuminate\Http\Request;
 */
 
 
-Route::prefix('v1')->namespace('Api')->name('api.v1.')->group(function() {
-    Route::middleware('throttle:' . config('api.rate_limits.sign'))
+Route::prefix('v1')
+    ->namespace('Api')
+    ->name('api.v1.')
+    ->group(function() {
+
+        Route::get('captchas/{tmp}', 'CaptchasController@captcha');
+
+
+        Route::middleware('throttle:' . config('api.rate_limits.sign'))
         ->group(function () {
+            // 图片验证码
+            Route::post('captchas', 'CaptchasController@store')
+                ->name('captchas.store');
             // 短信验证码
             Route::post('verificationCodes', 'VerificationCodesController@store')
                 ->name('verificationCodes.store');
@@ -25,7 +35,7 @@ Route::prefix('v1')->namespace('Api')->name('api.v1.')->group(function() {
                 ->name('users.store');
         });
 
-    Route::middleware('throttle:' . config('api.rate_limits.access'))
+        Route::middleware('throttle:' . config('api.rate_limits.access'))
         ->group(function () {
 
         });
