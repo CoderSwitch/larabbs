@@ -19,23 +19,28 @@ Route::prefix('v1')
     ->name('api.v1.')
     ->group(function() {
 
+        // 图片验证码
+        Route::post('captchas', 'CaptchasController@store')
+            ->name('captchas.store');
+
         Route::get('captchas/{tmp}', 'CaptchasController@captcha');
 
+// 短信验证码
+        Route::post('verificationCodes', 'VerificationCodesController@store')
+            ->name('verificationCodes.store');
+
+        // 登录
+        Route::post('authorizations', 'AuthorizationsController@store')
+            ->name('api.authorizations.store');
 
         Route::middleware('throttle:' . config('api.rate_limits.sign'))
         ->group(function () {
-            // 图片验证码
-            Route::post('captchas', 'CaptchasController@store')
-                ->name('captchas.store');
-            // 短信验证码
-            Route::post('verificationCodes', 'VerificationCodesController@store')
-                ->name('verificationCodes.store');
+
+
             // 用户注册
             Route::post('users', 'UsersController@store')
                 ->name('users.store');
-            // 登录
-            Route::post('authorizations', 'AuthorizationsController@store')
-                ->name('api.authorizations.store');
+
             // 刷新token
             Route::put('authorizations/current', 'AuthorizationsController@update')
                 ->name('authorizations.update');
@@ -47,6 +52,10 @@ Route::prefix('v1')
         Route::middleware('throttle:' . config('api.rate_limits.access'))
             ->group(function () {
                 // 游客可以访问的接口
+
+                // 用户列表
+                Route::get('userslist', 'UsersController@showlist')
+                    ->name('users.showlist');
 
                 // 某个用户的详情
                 Route::get('users/{user}', 'UsersController@show')
@@ -62,11 +71,11 @@ Route::prefix('v1')
                 ]);
 
                 // 某个用户发布的话题
-                Route::get('users/{user}/topics', 'TopicsController@userIndex')
+                Route::get('getusertopics', 'TopicsController@userIndex')
                     ->name('users.topics.index');
 
                 // 登录后可以访问的接口
-                Route::middleware('auth:api')->group(function() {
+                Route::middleware(['token.canrefresh'])->group(function() {
                     // 当前登录用户信息
                     Route::get('user', 'UsersController@me')
                         ->name('user.show');
@@ -86,6 +95,10 @@ Route::prefix('v1')
                     //删除话题
                     Route::post('deletetopic', 'TopicsController@deletetopic')
                         ->name('topics.deletetopic');
+
+                    // 发布回复
+                    Route::post('topics/replies', 'RepliesController@store')
+                        ->name('topics.replies.store');
                 });
             });
 });

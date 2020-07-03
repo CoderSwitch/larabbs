@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Auth\AuthenticationException;
 use App\Models\Image;
+use Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UsersController extends Controller
 {
@@ -41,9 +43,21 @@ class UsersController extends Controller
 //        return response()->json($user)->setStatusCode(201);
     }
 
+    public function showlist()
+    {
+//        $result = array();
+//        $result['userlist'] = User::all();
+        return $this->output(User::paginate(8),201,'');
+    }
+
     public function me(Request $request)
     {
-        return (new UserResource($request->user()))->showSensitiveFields();
+        return $this->output($request->user(),201,'');
+//        $token = $request->headers->get('aaaa');
+////        return $token;
+//
+//        $user = JWTAuth::toUser($token);;
+//        return (new UserResource($user))->showSensitiveFields();
     }
 
     public function update(UserRequest $request)

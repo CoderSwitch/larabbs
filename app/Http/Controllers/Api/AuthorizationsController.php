@@ -20,10 +20,15 @@ class AuthorizationsController extends Controller
         $credentials['password'] = $request->password;
 
         if (!$token = \Auth::guard('api')->attempt($credentials)) {
-            throw new AuthenticationException('用户名或密码错误');
+            return $this->output('',401,'用户名或密码错误');
+//            throw new AuthenticationException('用户名或密码错误');
         }
 
-        return $this->respondWithToken($token)->setStatusCode(201);
+
+
+        return $this->output($this->respondWithToken($token),201,'');
+
+//        return $this->respondWithToken($token)->setStatusCode(201);
 
     }
 
@@ -41,10 +46,16 @@ class AuthorizationsController extends Controller
 
     protected function respondWithToken($token)
     {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60
-        ]);
+        $result = array();
+        $result['access_token'] = $token;
+        $result['token_type'] = 'Bearer';
+        $result['expires_in'] = auth('api')->factory()->getTTL() * 60;
+
+        return $result;
+//        return response()->json([
+//            'access_token' => $token,
+//            'token_type' => 'Bearer',
+//            'expires_in' => auth('api')->factory()->getTTL() * 60
+//        ]);
     }
 }

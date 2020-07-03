@@ -14,13 +14,13 @@ class VerificationCodesController extends Controller
         $captchaData = \Cache::get($request->captcha_key);
 
         if (!$captchaData) {
-            abort(403, '图片验证码已失效');
+            return $this->output("",501,'图片验证码失效');
         }
 
         if (!hash_equals($captchaData['code'], $request->captcha_code)) {
             // 验证错误就清除缓存
             \Cache::forget($request->captcha_key);
-            throw new AuthenticationException('图片验证码错误');
+            return $this->output('',500,'图片验证码错误');
         }
 
         $phone = $request->phone;
@@ -36,10 +36,18 @@ class VerificationCodesController extends Controller
         // 清除图片验证码缓存
         \Cache::forget($request->captcha_key);
 
-        return response()->json([
-            'key' => $key,
-            'code' => $code,
-            'expired_at' => $expiredAt->toDateTimeString(),
-        ])->setStatusCode(201);
+
+        $result = array();
+        $result['key'] = $key;
+        $result['code'] = $code;
+        $result['expired_at'] = $expiredAt->toDateTimeString();
+
+        return $this->output($result,201,'');
+
+//        return response()->json([
+//            'key' => $key,
+//            'code' => $code,
+//            'expired_at' => $expiredAt->toDateTimeString(),
+//        ])->setStatusCode(201);
     }
 }
